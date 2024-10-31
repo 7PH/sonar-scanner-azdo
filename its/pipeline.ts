@@ -2,16 +2,19 @@ import { stringify } from "yaml";
 import {
   CLI_VERSION_INPUT_NAME,
   DOTNET_VERSION_INPUT_NAME,
+  DUMMY_PROJECT_CLI_KEY,
   DUMMY_PROJECT_CLI_PATH,
+  DUMMY_PROJECT_DOTNET_CORE_KEY,
   DUMMY_PROJECT_DOTNET_CORE_PATH,
+  DUMMY_PROJECT_DOTNET_FRAMEWORK_KEY,
   DUMMY_PROJECT_DOTNET_FRAMEWORK_PATH,
   DUMMY_PROJECT_GRADLE_PATH,
   DUMMY_PROJECT_MAVEN_PATH,
   PROJECT_KEY,
-  PROJECT_NAME,
-  SONARCLOUD_ORGANIZATION,
+  SONARCLOUD_ORGANIZATION_KEY,
   SONARCLOUD_SERVICE_CONNECTION,
   SONARQUBE_SERVICE_CONNECTION,
+  TASK_NAME_PREFIX,
 } from "./constant";
 import { PipelineCombination, TaskDefinition, YamlContent } from "./types";
 
@@ -31,9 +34,9 @@ function generateTaskName(
   config: PipelineCombination,
   name: "Prepare" | "Analyze" | "Publish",
 ): string {
-  const extension = config.version.extension.replace("sonar", "Sonar");
+  const extension = config.version.extension.replace("sonar", "Sonar").replace("cloud", "Cloud");
   const taskName = `${extension.split(":")[0]}${name}`;
-  return `${taskName}@${config.version.version}`;
+  return `${taskName}${TASK_NAME_PREFIX}@${config.version.version}`;
 }
 
 function generatePrepareTasks(config: PipelineCombination): TaskDefinition[] {
@@ -43,7 +46,7 @@ function generatePrepareTasks(config: PipelineCombination): TaskDefinition[] {
       config.version.extension === "sonarcloud"
         ? {
             SonarCloud: SONARCLOUD_SERVICE_CONNECTION,
-            organization: SONARCLOUD_ORGANIZATION,
+            organization: SONARCLOUD_ORGANIZATION_KEY,
             scannerMode: config.scanner.type,
           }
         : {
@@ -59,19 +62,21 @@ function generatePrepareTasks(config: PipelineCombination): TaskDefinition[] {
     prepareTask.inputs = {
       ...prepareTask.inputs,
       configMode: "manual",
-      cliProjectKey: DUMMY_PROJECT_CLI_PATH,
-      cliProjectName: PROJECT_NAME,
+      cliProjectKey: DUMMY_PROJECT_CLI_KEY,
+      cliProjectName: DUMMY_PROJECT_CLI_KEY,
       cliSources: DUMMY_PROJECT_CLI_PATH,
       [CLI_VERSION_INPUT_NAME]: config.scanner.version,
     };
   } else if (config.scanner.type === "dotnet") {
+    const projectKey =
+      config.os === "unix" ? DUMMY_PROJECT_DOTNET_CORE_KEY : DUMMY_PROJECT_DOTNET_FRAMEWORK_KEY;
     const projectPath =
       config.os === "unix" ? DUMMY_PROJECT_DOTNET_CORE_PATH : DUMMY_PROJECT_DOTNET_FRAMEWORK_PATH;
 
     prepareTask.inputs = {
       ...prepareTask.inputs,
-      projectKey: projectPath,
-      projectName: PROJECT_NAME,
+      projectKey,
+      projectName: projectKey,
       extraProperties: `sonar.projectBaseDir=$(Build.SourcesDirectory)/${projectPath}`,
       [DOTNET_VERSION_INPUT_NAME]: config.scanner.version,
     };

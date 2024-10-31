@@ -7,22 +7,22 @@ pool:
 variables:
   system.debug: true
 steps:
-  - task: SonarcloudPrepare@1
+  - task: SonarCloudPrepareTest@1
     inputs:
       SonarCloud: SonarCloud
-      organization: sonarsource-integration-tests
+      organization: 7ph
       scannerMode: other
       projectKey: azdo-it-project
   - task: Gradle@3
     inputs:
-      gradleWrapperFile: dummy-project-gradle/gradlew
-      workingDirectory: dummy-project-gradle
+      gradleWrapperFile: its/fixtures/dummy-project-gradle/gradlew
+      workingDirectory: its/fixtures/dummy-project-gradle
       tasks: build
       javaHomeOption: JDKVersion
       jdkVersionOption: "1.17"
       sonarQubeRunAnalysis: true
       sqGradlePluginVersionChoice: build
       spotBugsAnalysis: false
-  - task: SonarcloudPublish@1
+  - task: SonarCloudPublishTest@1
     inputs:
       pollingTimeoutSec: "300"

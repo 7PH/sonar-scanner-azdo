@@ -12,18 +12,18 @@ steps:
       versionSpec: "17"
       jdkArchitectureOption: x64
       jdkSourceOption: PreInstalled
-  - task: SonarcloudPrepare@1
+  - task: SonarCloudPrepareTest@1
     inputs:
       SonarCloud: SonarCloud
-      organization: sonarsource-integration-tests
+      organization: 7ph
       scannerMode: other
       projectKey: azdo-it-project
   - task: Maven@4
     inputs:
-      mavenPomFile: dummy-project-maven/pom.xml
+      mavenPomFile: its/fixtures/dummy-project-maven/pom.xml
       goals: package
       options: -X
       sonarQubeRunAnalysis: true
-  - task: SonarcloudPublish@1
+  - task: SonarCloudPublishTest@1
     inputs:
       pollingTimeoutSec: "300"

@@ -7,18 +7,18 @@ pool:
 variables:
   system.debug: true
 steps:
-  - task: SonarcloudPrepare@1
+  - task: SonarCloudPrepareTest@1
     inputs:
       SonarCloud: SonarCloud
-      organization: sonarsource-integration-tests
+      organization: 7ph
       scannerMode: cli
       configMode: manual
       cliProjectKey: dummy-project-cli
-      cliProjectName: AZDO IT Project
-      cliSources: dummy-project-cli
+      cliProjectName: dummy-project-cli
+      cliSources: its/fixtures/dummy-project-cli
       cliScannerVersion: 6.2.1.4610
-  - task: SonarcloudAnalyze@1
+  - task: SonarCloudAnalyzeTest@1
     inputs: {}
-  - task: SonarcloudPublish@1
+  - task: SonarCloudPublishTest@1
     inputs:
       pollingTimeoutSec: "300"

@@ -7,18 +7,18 @@ pool:
 variables:
   system.debug: true
 steps:
-  - task: SonarcloudPrepare@1
+  - task: SonarCloudPrepareTest@1
     inputs:
       SonarCloud: SonarCloud
-      organization: sonarsource-integration-tests
+      organization: 7ph
       scannerMode: dotnet
       projectKey: dummy-project-dotnet-core
-      projectName: AZDO IT Project
-      extraProperties: sonar.projectBaseDir=$(Build.SourcesDirectory)/dummy-project-dotnet-core
+      projectName: dummy-project-dotnet-core
+      extraProperties: sonar.projectBaseDir=$(Build.SourcesDirectory)/its/fixtures/dummy-project-dotnet-core
   - script: dotnet build --configuration Release
-    workingDirectory: dummy-project-dotnet-core
-  - task: SonarcloudAnalyze@1
+    workingDirectory: its/fixtures/dummy-project-dotnet-core
+  - task: SonarCloudAnalyzeTest@1
     inputs: {}
-  - task: SonarcloudPublish@1
+  - task: SonarCloudPublishTest@1
     inputs:
       pollingTimeoutSec: "300"
